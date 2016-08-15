@@ -1,0 +1,27 @@
+---
+- name: Update VIO OMS
+  hosts: all
+  tasks:
+    # Copies the key from the user who is running ansible to the remote machine user viouser
+    - name: Add authorized key
+      authorized_key:
+        user: viouser
+        key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+    
+    # Allow viouser to sudo without password
+    - name: Configure sudoers
+      lineinfile:
+        dest: /etc/sudoers
+        line: "{{ item }}"
+      with_items:
+        - "viouser ALL=NOPASSWD:ALL"
+    
+    # # Edit playbook to insert my SSH key
+    # - name: Add my SSH key to the VIO sshkeys Ansible playbook
+    #   blockinfile:
+    #     dest: /var/lib/vio/ansible/roles/prep-common/tasks/sshkeys.yml
+    #     block: |
+    #       - name: add to authorized keys
+    #         local_action: authorized_key user=viouser key="{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}" state=present
+    #         with_items: play_hosts
+    #         run_once: true
