@@ -1,0 +1,10 @@
+---
+- name: Remove stale known_hosts entry locally
+  hosts: 127.0.0.1 
+  tasks:
+      #- name: Remove stale management server ssh info
+      #known_hosts: name='10.28.227.20'
+      #             state='absent'
+    - name: Run command module to remove stale info
+      command: ssh-keygen -R 10.28.227.20 
+      
